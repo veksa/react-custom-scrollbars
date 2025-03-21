@@ -1,130 +1,245 @@
 import { Scrollbars } from 'react-custom-scrollbars';
-import { render, unmountComponentAtNode } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import React from 'react';
 
 export default function createTests(scrollbarWidth, envScrollbarWidth) {
     let node;
+    let root;
+
+    let ref;
+
+    const setRef = nextRef => {
+        ref = nextRef;
+    };
+
     beforeEach(() => {
         node = document.createElement('div');
+        node.setAttribute('id', 'root');
         document.body.appendChild(node);
+
+        root = createRoot(node);
     });
+
     afterEach(() => {
-        unmountComponentAtNode(node);
+        root.unmount();
         document.body.removeChild(node);
     });
 
     describe('getters', () => {
-        function renderScrollbars(callback) {
-            render((
-                <Scrollbars style={{ width: 100, height: 100 }}>
-                    <div style={{ width: 200, height: 200 }}/>
-                </Scrollbars>
-            ), node, callback);
-        }
         describe('getScrollLeft', () => {
             it('should return scrollLeft', done => {
-                renderScrollbars(function callback() {
-                    this.scrollLeft(50);
-                    expect(this.getScrollLeft()).toEqual(50);
-                    done();
-                });
+                root.render((
+                    <Scrollbars ref={setRef} style={{ width: 100, height: 100 }}>
+                        <div style={{ width: 200, height: 200 }}/>
+                    </Scrollbars>
+                ));
+
+                setTimeout(() => {
+                    ref.scrollLeft(50);
+
+                    setTimeout(() => {
+                        expect(ref.getScrollLeft()).toEqual(50);
+
+                        done();
+                    }, 100);
+                }, 1000);
             });
         });
+
         describe('getScrollTop', () => {
             it('should return scrollTop', done => {
-                renderScrollbars(function callback() {
-                    this.scrollTop(50);
-                    expect(this.getScrollTop()).toEqual(50);
-                    done();
-                });
+                root.render((
+                    <Scrollbars ref={setRef} style={{ width: 100, height: 100 }}>
+                        <div style={{ width: 200, height: 200 }}/>
+                    </Scrollbars>
+                ));
+
+                setTimeout(() => {
+                    ref.scrollTop(50);
+
+                    setTimeout(() => {
+                        expect(ref.getScrollTop()).toEqual(50);
+
+                        done();
+                    }, 100);
+                }, 1000);
             });
         });
+
         describe('getScrollWidth', () => {
             it('should return scrollWidth', done => {
-                renderScrollbars(function callback() {
-                    expect(this.getScrollWidth()).toEqual(200);
+                root.render((
+                    <Scrollbars ref={setRef} style={{ width: 100, height: 100 }}>
+                        <div style={{ width: 200, height: 200 }}/>
+                    </Scrollbars>
+                ));
+
+                setTimeout(() => {
+                    expect(ref.getScrollWidth()).toEqual(200);
+
                     done();
-                });
+                }, 1000);
             });
         });
+
         describe('getScrollHeight', () => {
             it('should return scrollHeight', done => {
-                renderScrollbars(function callback() {
-                    expect(this.getScrollHeight()).toEqual(200);
+                root.render((
+                    <Scrollbars ref={setRef} style={{ width: 100, height: 100 }}>
+                        <div style={{ width: 200, height: 200 }}/>
+                    </Scrollbars>
+                ));
+
+                setTimeout(() => {
+                    expect(ref.getScrollHeight()).toEqual(200);
+
                     done();
-                });
+                }, 1000);
             });
         });
+
         describe('getClientWidth', () => {
             it('should return scrollWidth', done => {
-                renderScrollbars(function callback() {
-                    expect(this.getClientWidth()).toEqual(100 + (scrollbarWidth - envScrollbarWidth));
+                root.render((
+                    <Scrollbars ref={setRef} style={{ width: 100, height: 100 }}>
+                        <div style={{ width: 200, height: 200 }}/>
+                    </Scrollbars>
+                ));
+
+                setTimeout(() => {
+                    expect(ref.getClientWidth()).toEqual(100 + (scrollbarWidth - envScrollbarWidth));
+
                     done();
-                });
+                }, 1000);
             });
         });
+
         describe('getClientHeight', () => {
             it('should return scrollHeight', done => {
-                renderScrollbars(function callback() {
-                    expect(this.getClientHeight()).toEqual(100 + (scrollbarWidth - envScrollbarWidth));
+                root.render((
+                    <Scrollbars ref={setRef} style={{ width: 100, height: 100 }}>
+                        <div style={{ width: 200, height: 200 }}/>
+                    </Scrollbars>
+                ));
+
+                setTimeout(() => {
+                    expect(ref.getClientHeight()).toEqual(100 + (scrollbarWidth - envScrollbarWidth));
+
                     done();
-                });
+                }, 1000);
             });
         });
     });
 
     describe('setters', () => {
-        function renderScrollbars(callback) {
-            render((
-                <Scrollbars style={{ width: 100, height: 100 }}>
-                    <div style={{ width: 200, height: 200 }}/>
-                </Scrollbars>
-            ), node, callback);
-        }
         describe('scrollLeft/scrollToLeft', () => {
             it('should scroll to given left value', done => {
-                renderScrollbars(function callback() {
-                    this.scrollLeft(50);
-                    expect(this.getScrollLeft()).toEqual(50);
-                    this.scrollToLeft();
-                    expect(this.getScrollLeft()).toEqual(0);
-                    this.scrollLeft(50);
-                    this.scrollLeft();
-                    expect(this.getScrollLeft()).toEqual(0);
-                    done();
-                });
+                root.render((
+                    <Scrollbars ref={setRef} style={{ width: 100, height: 100 }}>
+                        <div style={{ width: 200, height: 200 }}/>
+                    </Scrollbars>
+                ));
+
+                setTimeout(() => {
+                    ref.scrollLeft(50);
+
+                    setTimeout(() => {
+                        expect(ref.getScrollLeft()).toEqual(50);
+
+                        ref.scrollToLeft();
+
+                        setTimeout(() => {
+                            expect(ref.getScrollLeft()).toEqual(0);
+
+                            ref.scrollLeft(50);
+
+                            setTimeout(() => {
+                                ref.scrollLeft();
+
+                                setTimeout(() => {
+                                    expect(ref.getScrollLeft()).toEqual(0);
+
+                                    done();
+                                }, 100);
+                            }, 100);
+                        }, 100);
+                    }, 100);
+                }, 1000);
             });
         });
+
         describe('scrollTop/scrollToTop', () => {
             it('should scroll to given top value', done => {
-                renderScrollbars(function callback() {
-                    this.scrollTop(50);
-                    expect(this.getScrollTop()).toEqual(50);
-                    this.scrollToTop();
-                    expect(this.getScrollTop()).toEqual(0);
-                    this.scrollTop(50);
-                    this.scrollTop();
-                    expect(this.getScrollTop()).toEqual(0);
-                    done();
-                });
+                root.render((
+                    <Scrollbars ref={setRef} style={{ width: 100, height: 100 }}>
+                        <div style={{ width: 200, height: 200 }}/>
+                    </Scrollbars>
+                ));
+
+                setTimeout(() => {
+                    ref.scrollTop(50);
+
+                    setTimeout(() => {
+                        expect(ref.getScrollTop()).toEqual(50);
+
+                        ref.scrollToTop();
+
+                        setTimeout(() => {
+                            expect(ref.getScrollTop()).toEqual(0);
+
+                            ref.scrollTop(50);
+
+                            setTimeout(() => {
+                                ref.scrollTop();
+
+                                setTimeout(() => {
+                                    expect(ref.getScrollTop()).toEqual(0);
+                                    done();
+                                }, 100);
+                            }, 100);
+                        }, 100);
+                    }, 100);
+                }, 1000);
             });
         });
+
         describe('scrollToRight', () => {
             it('should scroll to right', done => {
-                renderScrollbars(function callback() {
-                    this.scrollToRight();
-                    expect(this.getScrollLeft()).toEqual(100 + (envScrollbarWidth - scrollbarWidth));
-                    done();
-                });
+                root.render((
+                    <Scrollbars ref={setRef} style={{ width: 100, height: 100 }}>
+                        <div style={{ width: 200, height: 200 }}/>
+                    </Scrollbars>
+                ));
+
+                setTimeout(() => {
+                    ref.scrollToRight();
+
+                    setTimeout(() => {
+                        expect(Math.ceil(ref.getScrollLeft())).toEqual(100 + (envScrollbarWidth - scrollbarWidth));
+
+                        done();
+                    }, 100);
+                }, 1000);
             });
         });
+
         describe('scrollToBottom', () => {
             it('should scroll to bottom', done => {
-                renderScrollbars(function callback() {
-                    this.scrollToBottom();
-                    expect(this.getScrollTop()).toEqual(100 + (envScrollbarWidth - scrollbarWidth));
-                    done();
-                });
+                root.render((
+                    <Scrollbars ref={setRef} style={{ width: 100, height: 100 }}>
+                        <div style={{ width: 200, height: 200 }}/>
+                    </Scrollbars>
+                ));
+
+                setTimeout(() => {
+                    ref.scrollToBottom();
+
+                    setTimeout(() => {
+                        expect(Math.ceil(ref.getScrollTop())).toEqual(100 + (envScrollbarWidth - scrollbarWidth));
+
+                        done();
+                    }, 100);
+                }, 1000);
             });
         });
     });

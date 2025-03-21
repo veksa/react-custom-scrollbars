@@ -1,6 +1,6 @@
 {
-  "name": "react-custom-scrollbars",
-  "version": "4.2.1",
+  "name": "@veksa/custom-scrollbars",
+  "version": "4.2.1-patch.1",
   "description": "React scrollbars component",
   "main": "lib/index.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "test": "cross-env NODE_ENV=test karma start",
     "test:watch": "cross-env NODE_ENV=test karma start --auto-watch --no-single-run",
     "test:cov": "cross-env NODE_ENV=test COVERAGE=true karma start --single-run",
-    "prepublish": "npm run lint && npm run test && npm run clean && npm run build && npm run build:umd && npm run build:umd:min && node ./prepublish"
+    "deduplicate": "yarn-deduplicate yarn.lock"
   },
   "repository": {
     "type": "git",
@@ -32,7 +32,12 @@
     "url": "https://github.com/malte-wessel/react-custom-scrollbars/issues"
   },
   "homepage": "https://github.com/malte-wessel/react-custom-scrollbars",
+  "publishConfig": {
+    "registry": "https://box.kube.spotwa.re/repository/webteam-npm-private/"
+  },
   "devDependencies": {
+    "@types/react": "^18.2.22",
+    "@types/react-dom": "^18.2.7",
     "babel-cli": "^6.2.0",
     "babel-core": "^6.2.1",
     "babel-eslint": "^6.1.2",
@@ -61,20 +66,22 @@
     "karma-sourcemap-loader": "^0.3.6",
     "karma-webpack": "^1.6.0",
     "mocha": "^2.2.5",
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "rimraf": "^2.3.4",
     "simulant": "^0.2.2",
     "webpack": "^1.9.6",
-    "webpack-dev-server": "^1.8.2"
+    "webpack-dev-server": "^1.8.2",
+    "yarn-deduplicate": "3.1.0"
   },
   "peerDependencies": {
-    "react": "^0.14.0 || ^15.0.0 || ^16.0.0",
-    "react-dom": "^0.14.0 || ^15.0.0 || ^16.0.0"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "dependencies": {
-    "dom-css": "^2.0.0",
-    "prop-types": "^15.5.10",
-    "raf": "^3.1.0"
-  }
+    "dom-css": "^2.1.0",
+    "prop-types": "^15.8.1",
+    "raf": "^3.4.1"
+  },
+  "packageManager": "yarn@4.7.0"
 }

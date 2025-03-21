@@ -1,141 +1,179 @@
 import { Scrollbars } from 'react-custom-scrollbars';
-import { render, unmountComponentAtNode, findDOMNode } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import React, { Component } from 'react';
 
 export default function createTests(scrollbarWidth, envScrollbarWidth) {
     describe('autoHeight', () => {
         let node;
+        let root;
+
         beforeEach(() => {
             node = document.createElement('div');
+            node.setAttribute('id', 'root');
             document.body.appendChild(node);
+
+            root = createRoot(node);
         });
+
         afterEach(() => {
-            unmountComponentAtNode(node);
+            root.unmount();
             document.body.removeChild(node);
         });
 
         describe('when rendered', () => {
             it('should have min-height and max-height', done => {
-                render((
+                root.render((
                     <Scrollbars
                         autoHeight
                         autoHeightMin={0}
                         autoHeightMax={100}>
                         <div style={{ width: 200, height: 200 }}/>
                     </Scrollbars>
-                ), node, function callback() {
-                    const scrollbars = findDOMNode(this);
-                    expect(scrollbars.style.position).toEqual('relative');
-                    expect(scrollbars.style.minHeight).toEqual('0px');
-                    expect(scrollbars.style.maxHeight).toEqual('100px');
-                    expect(this.view.style.position).toEqual('relative');
-                    expect(this.view.style.minHeight).toEqual(`${scrollbarWidth}px`);
-                    expect(this.view.style.maxHeight).toEqual(`${100 + scrollbarWidth}px`);
+                ));
+
+                setTimeout(() => {
+                    const rootNode = node.getElementsByTagName('div')[0];
+                    const scrollRoot = node.getElementsByTagName('div')[1];
+                    const scrollView = rootNode.getElementsByTagName('div')[0];
+
+                    expect(scrollRoot.style.position).toEqual('relative');
+                    expect(scrollRoot.style.minHeight).toEqual('0px');
+                    expect(scrollRoot.style.maxHeight).toEqual('100px');
+
+                    expect(scrollView.style.position).toEqual('relative');
+                    expect(scrollView.style.minHeight).toEqual(`${scrollbarWidth}px`);
+                    expect(scrollView.style.maxHeight).toEqual(`${100 + scrollbarWidth}px`);
+
                     done();
-                });
+                }, 1000);
             });
         });
 
         describe('when native scrollbars have a width', () => {
             if (!scrollbarWidth) return;
             it('hides native scrollbars', done => {
-                render((
+                root.render((
                     <Scrollbars
                         autoHeight
                         autoHeightMax={100}>
                         <div style={{ width: 200, height: 200 }}/>
                     </Scrollbars>
-                ), node, function callback() {
+                ));
+
+                setTimeout(() => {
+                    const rootNode = node.getElementsByTagName('div')[0];
+                    const scrollView = rootNode.getElementsByTagName('div')[0];
+
                     const width = `-${scrollbarWidth}px`;
-                    expect(this.view.style.marginRight).toEqual(width);
-                    expect(this.view.style.marginBottom).toEqual(width);
+                    expect(scrollView.style.marginRight).toEqual(width);
+                    expect(scrollView.style.marginBottom).toEqual(width);
+
                     done();
-                });
+                }, 1000);
             });
         });
 
         describe('when native scrollbars have no width', () => {
             if (scrollbarWidth) return;
             it('hides bars', done => {
-                render((
+                root.render((
                     <Scrollbars
                         autoHeight
                         autoHeightMax={100}>
                         <div style={{ width: 200, height: 200 }}/>
                     </Scrollbars>
-                ), node, function callback() {
-                    setTimeout(() => {
-                        expect(this.trackVertical.style.display).toEqual('none');
-                        expect(this.trackHorizontal.style.display).toEqual('none');
-                        done();
-                    }, 100);
-                });
+                ));
+
+                setTimeout(() => {
+                    const rootNode = node.getElementsByTagName('div')[0];
+                    const trackVertical = rootNode.getElementsByTagName('div')[2];
+                    const trackHorizontal = rootNode.getElementsByTagName('div')[4];
+
+                    expect(trackVertical.style.display).toEqual('none');
+                    expect(trackHorizontal.style.display).toEqual('none');
+
+                    done();
+                }, 1000);
             });
         });
 
         describe('when content is smaller than maxHeight', () => {
             it('should have the content\'s height', done => {
-                render((
+                root.render((
                     <Scrollbars
                         autoHeight
                         autoHeightMax={100}>
                         <div style={{ height: 50 }}/>
                     </Scrollbars>
-                ), node, function callback() {
-                    setTimeout(() => {
-                        const scrollbars = findDOMNode(this);
-                        expect(scrollbars.clientHeight).toEqual(50 + (envScrollbarWidth - scrollbarWidth));
-                        expect(this.view.clientHeight).toEqual(50);
-                        expect(this.view.scrollHeight).toEqual(50);
-                        expect(this.thumbVertical.clientHeight).toEqual(0);
-                        done();
-                    }, 100);
-                });
+                ));
+
+                setTimeout(() => {
+                    const rootNode = node.getElementsByTagName('div')[0];
+                    const scrollView = rootNode.getElementsByTagName('div')[0];
+                    const thumbVertical = rootNode.getElementsByTagName('div')[3];
+
+                    expect(node.clientHeight).toEqual(50 + (envScrollbarWidth - scrollbarWidth));
+                    expect(scrollView.clientHeight).toEqual(50);
+                    expect(scrollView.scrollHeight).toEqual(50);
+
+                    expect(thumbVertical.clientHeight).toEqual(0);
+
+                    done();
+                }, 1000);
             });
         });
 
         describe('when content is larger than maxHeight', () => {
             it('should show scrollbars', done => {
-                render((
+                root.render((
                     <Scrollbars
                         autoHeight
                         autoHeightMax={100}>
                         <div style={{ height: 200 }}/>
                     </Scrollbars>
-                ), node, function callback() {
-                    setTimeout(() => {
-                        const scrollbars = findDOMNode(this);
-                        expect(scrollbars.clientHeight).toEqual(100);
-                        expect(this.view.clientHeight).toEqual(100 - (envScrollbarWidth - scrollbarWidth));
-                        expect(this.view.scrollHeight).toEqual(200);
-                        if (scrollbarWidth) {
-                            // 100 / 200 * 96 = 48
-                            expect(this.thumbVertical.clientHeight).toEqual(48);
-                        }
-                        done();
-                    }, 100);
-                });
+                ));
+
+                setTimeout(() => {
+                    const rootNode = node.getElementsByTagName('div')[0];
+                    const scrollView = rootNode.getElementsByTagName('div')[0];
+                    const thumbVertical = rootNode.getElementsByTagName('div')[3];
+
+                    expect(node.clientHeight).toEqual(100);
+                    expect(scrollView.clientHeight).toEqual(100 - (envScrollbarWidth - scrollbarWidth));
+                    expect(scrollView.scrollHeight).toEqual(200);
+
+                    if (scrollbarWidth) {
+                        // 100 / 200 * 96 = 48
+                        expect(thumbVertical.clientHeight).toEqual(48);
+                    }
+
+                    done();
+                }, 1000);
             });
         });
 
         describe('when minHeight is greater than 0', () => {
             it('should have height greater than 0', done => {
-                render((
+                root.render((
                     <Scrollbars
                         autoHeight
                         autoHeightMin={100}
                         autoHeightMax={200}>
                         <div/>
                     </Scrollbars>
-                ), node, function callback() {
-                    setTimeout(() => {
-                        const scrollbars = findDOMNode(this);
-                        expect(scrollbars.clientHeight).toEqual(100);
-                        expect(this.view.clientHeight).toEqual(100 - (envScrollbarWidth - scrollbarWidth));
-                        expect(this.thumbVertical.clientHeight).toEqual(0);
-                        done();
-                    }, 100);
-                });
+                ));
+
+                setTimeout(() => {
+                    const rootNode = node.getElementsByTagName('div')[0];
+                    const scrollView = rootNode.getElementsByTagName('div')[0];
+                    const thumbVertical = rootNode.getElementsByTagName('div')[3];
+
+                    expect(node.clientHeight).toEqual(100);
+                    expect(scrollView.clientHeight).toEqual(100 - (envScrollbarWidth - scrollbarWidth));
+                    expect(thumbVertical.clientHeight).toEqual(0);
+
+                    done();
+                }, 1000);
             });
         });
 
@@ -146,7 +184,6 @@ export default function createTests(scrollbarWidth, envScrollbarWidth) {
                         return (
                             <div style={{ width: 500, height: 500 }}>
                                 <Scrollbars
-                                    ref={(ref) => { this.scrollbars = ref; }}
                                     autoHeight
                                     autoHeightMin="50%"
                                     autoHeightMax="100%">
@@ -156,43 +193,52 @@ export default function createTests(scrollbarWidth, envScrollbarWidth) {
                         );
                     }
                 }
-                render(<Root/>, node, function callback() {
-                    setTimeout(() => {
-                        const $scrollbars = findDOMNode(this.scrollbars);
-                        const view = this.scrollbars.view;
-                        expect($scrollbars.clientWidth).toEqual(500);
-                        expect($scrollbars.clientHeight).toEqual(250);
-                        expect($scrollbars.style.position).toEqual('relative');
-                        expect($scrollbars.style.minHeight).toEqual('50%');
-                        expect($scrollbars.style.maxHeight).toEqual('100%');
-                        expect(view.style.position).toEqual('relative');
-                        expect(view.style.minHeight).toEqual(`calc(50% + ${scrollbarWidth}px)`);
-                        expect(view.style.maxHeight).toEqual(`calc(100% + ${scrollbarWidth}px)`);
-                        done();
-                    }, 100);
-                });
+                root.render((<Root/>));
+
+                setTimeout(() => {
+                    const rootNode = node.getElementsByTagName('div')[0];
+                    const scrollNode = rootNode.getElementsByTagName('div')[0];
+                    const scrollView = scrollNode.getElementsByTagName('div')[0];
+
+                    expect(scrollNode.clientWidth).toEqual(500);
+                    expect(scrollNode.clientHeight).toEqual(250);
+                    expect(scrollNode.style.position).toEqual('relative');
+                    expect(scrollNode.style.minHeight).toEqual('50%');
+                    expect(scrollNode.style.maxHeight).toEqual('100%');
+
+                    expect(scrollView.style.position).toEqual('relative');
+                    expect(scrollView.style.minHeight).toEqual(`calc(50% + ${scrollbarWidth}px)`);
+                    expect(scrollView.style.maxHeight).toEqual(`calc(100% + ${scrollbarWidth}px)`);
+
+                    done();
+                }, 1000);
             });
         });
 
         describe('when using other units', () => {
             it('should use calc', done => {
-                render((
+                root.render((
                     <Scrollbars
                         autoHeight
                         autoHeightMin="10em"
                         autoHeightMax="100em">
                         <div style={{ width: 200, height: 200 }}/>
                     </Scrollbars>
-                ), node, function callback() {
-                    const scrollbars = findDOMNode(this);
-                    expect(scrollbars.style.position).toEqual('relative');
-                    expect(scrollbars.style.minHeight).toEqual('10em');
-                    expect(scrollbars.style.maxHeight).toEqual('100em');
-                    expect(this.view.style.position).toEqual('relative');
-                    expect(this.view.style.minHeight).toEqual(`calc(10em + ${scrollbarWidth}px)`);
-                    expect(this.view.style.maxHeight).toEqual(`calc(100em + ${scrollbarWidth}px)`);
+                ));
+
+                setTimeout(() => {
+                    const rootNode = node.getElementsByTagName('div')[0];
+                    const scrollView = rootNode.getElementsByTagName('div')[0];
+
+                    expect(rootNode.style.position).toEqual('relative');
+                    expect(rootNode.style.minHeight).toEqual('10em');
+                    expect(rootNode.style.maxHeight).toEqual('100em');
+                    expect(scrollView.style.position).toEqual('relative');
+                    expect(scrollView.style.minHeight).toEqual(`calc(10em + ${scrollbarWidth}px)`);
+                    expect(scrollView.style.maxHeight).toEqual(`calc(100em + ${scrollbarWidth}px)`);
+
                     done();
-                });
+                }, 1000);
             });
         });
     });

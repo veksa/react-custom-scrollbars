@@ -1,17 +1,24 @@
 import { Scrollbars } from 'react-custom-scrollbars';
-import { render, unmountComponentAtNode, findDOMNode } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import React, { Component } from 'react';
 
 export default function createTests() {
     let node;
+    let root;
+
     beforeEach(() => {
         node = document.createElement('div');
+        node.setAttribute('id', 'root');
         document.body.appendChild(node);
+
+        root = createRoot(node);
     });
+
     afterEach(() => {
-        unmountComponentAtNode(node);
+        root.unmount();
         document.body.removeChild(node);
     });
+
     describe('when scrollbars are in flexbox environment', () => {
         it('should still work', done => {
             class Root extends Component {
@@ -25,16 +32,18 @@ export default function createTests() {
                     );
                 }
             }
-            render(<Root/>, node, function callback() {
-                setTimeout(() => {
-                    const { scrollbars } = this;
-                    const $scrollbars = findDOMNode(scrollbars);
-                    const $view = scrollbars.view;
-                    expect($scrollbars.clientHeight).toBeGreaterThan(0);
-                    expect($view.clientHeight).toBeGreaterThan(0);
-                    done();
-                }, 100);
-            });
+            root.render(<Root/>);
+
+            setTimeout(() => {
+                const rootNode = node.getElementsByTagName('div')[0];
+                const scrollNode = rootNode.getElementsByTagName('div')[0];
+                const scrollView = rootNode.getElementsByTagName('div')[0];
+
+                expect(scrollNode.clientHeight).toBeGreaterThan(0);
+                expect(scrollView.clientHeight).toBeGreaterThan(0);
+
+                done();
+            }, 1000);
         });
     });
 }
