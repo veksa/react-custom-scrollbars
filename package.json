@@ -3,7 +3,6 @@
   "version": "4.2.1-patch.1",
   "description": "React scrollbars component",
   "main": "./dist/cjs/scrollbars.cjs",
-  "module": "./dist/scrollbars.legacy-esm.js",
   "types": "./dist/scrollbars.d.ts",
   "exports": {
     "./package.json": "./package.json",
@@ -41,9 +40,6 @@
     "url": "https://github.com/malte-wessel/react-custom-scrollbars/issues"
   },
   "homepage": "https://github.com/malte-wessel/react-custom-scrollbars",
-  "publishConfig": {
-    "registry": "https://box.kube.spotwa.re/repository/webteam-npm-private/"
-  },
   "dependencies": {
     "dom-css": "^2.1.0",
     "raf": "^3.4.1"
@@ -51,18 +47,18 @@
   "devDependencies": {
     "@types/dom-css": "^2.1.1",
     "@types/raf": "3.4.3",
-    "@types/react": "^18.2.22",
-    "@types/react-dom": "^18.2.7",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "rimraf": "^2.3.4",
+    "@types/react": "^19.0.12",
+    "@types/react-dom": "^19.0.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "rimraf": "^6.0.1",
     "simulant": "^0.2.2",
     "tsup": "8.4.0",
     "typescript": "^5.8.2"
   },
   "peerDependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "packageManager": "yarn@4.7.0"
 }
