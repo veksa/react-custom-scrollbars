@@ -1,4 +1,6 @@
-export const containerStyleDefault = {
+import {CSSProperties} from "react";
+
+export const containerStyleDefault: CSSProperties = {
     position: 'relative',
     overflow: 'hidden',
     width: '100%',
@@ -6,11 +8,11 @@ export const containerStyleDefault = {
 };
 
 // Overrides containerStyleDefault properties
-export const containerStyleAutoHeight = {
+export const containerStyleAutoHeight: CSSProperties = {
     height: 'auto'
 };
 
-export const viewStyleDefault = {
+export const viewStyleDefault: CSSProperties = {
     position: 'absolute',
     top: 0,
     left: 0,
@@ -21,7 +23,7 @@ export const viewStyleDefault = {
 };
 
 // Overrides viewStyleDefault properties
-export const viewStyleAutoHeight = {
+export const viewStyleAutoHeight: CSSProperties = {
     position: 'relative',
     top: undefined,
     left: undefined,
@@ -29,29 +31,29 @@ export const viewStyleAutoHeight = {
     bottom: undefined
 };
 
-export const viewStyleUniversalInitial = {
+export const viewStyleUniversalInitial: CSSProperties = {
     overflow: 'hidden',
     marginRight: 0,
     marginBottom: 0,
 };
 
-export const trackHorizontalStyleDefault = {
+export const trackHorizontalStyleDefault: CSSProperties = {
     position: 'absolute',
     height: 6
 };
 
-export const trackVerticalStyleDefault = {
+export const trackVerticalStyleDefault: CSSProperties = {
     position: 'absolute',
     width: 6
 };
 
-export const thumbHorizontalStyleDefault = {
+export const thumbHorizontalStyleDefault: CSSProperties = {
     position: 'relative',
     display: 'block',
     height: '100%'
 };
 
-export const thumbVerticalStyleDefault = {
+export const thumbVerticalStyleDefault: CSSProperties = {
     position: 'relative',
     display: 'block',
     width: '100%'
@@ -62,5 +64,5 @@ export const disableSelectStyle = {
 };
 
 export const disableSelectStyleReset = {
-    userSelect: ''
+    userSelect: '',
 };
