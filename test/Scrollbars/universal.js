@@ -1,15 +1,21 @@
 import { Scrollbars } from 'react-custom-scrollbars';
-import { render, unmountComponentAtNode } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import React from 'react';
 
 export default function createTests(scrollbarWidth) {
     let node;
+    let root;
+
     beforeEach(() => {
         node = document.createElement('div');
+        node.setAttribute('id', 'root');
         document.body.appendChild(node);
+
+        root = createRoot(node);
     });
+
     afterEach(() => {
-        unmountComponentAtNode(node);
+        root.unmount();
         document.body.removeChild(node);
     });
 
@@ -22,44 +28,57 @@ export default function createTests(scrollbarWidth) {
                         // looks like on the first rendering
                         componentDidMount() {}
                     }
-                    render((
+                    root.render((
                         <ScrollbarsTest universal style={{ width: 100, height: 100 }}>
                             <div style={{ width: 200, height: 200 }}/>
                         </ScrollbarsTest>
-                    ), node, function callback() {
-                        const { view, trackHorizontal, trackVertical } = this;
-                        expect(view.style.position).toEqual('absolute');
-                        expect(view.style.overflow).toEqual('hidden');
-                        expect(view.style.top).toEqual('0px');
-                        expect(view.style.bottom).toEqual('0px');
-                        expect(view.style.left).toEqual('0px');
-                        expect(view.style.right).toEqual('0px');
-                        expect(view.style.marginBottom).toEqual('0px');
-                        expect(view.style.marginRight).toEqual('0px');
-                        expect(trackHorizontal.style.display).toEqual('none');
+                    ));
+
+                    setTimeout(() => {
+                        const rootNode = node.getElementsByTagName('div')[0];
+                        const scrollView = rootNode.getElementsByTagName('div')[0];
+                        const trackVertical = rootNode.getElementsByTagName('div')[2];
+                        const trackHorizontal = rootNode.getElementsByTagName('div')[4];
+
+                        expect(scrollView.style.position).toEqual('absolute');
+                        expect(scrollView.style.overflow).toEqual('hidden');
+                        expect(scrollView.style.top).toEqual('0px');
+                        expect(scrollView.style.bottom).toEqual('0px');
+                        expect(scrollView.style.left).toEqual('0px');
+                        expect(scrollView.style.right).toEqual('0px');
+                        expect(scrollView.style.marginBottom).toEqual('0px');
+                        expect(scrollView.style.marginRight).toEqual('0px');
+
                         expect(trackVertical.style.display).toEqual('none');
+                        expect(trackHorizontal.style.display).toEqual('none');
+
                         done();
-                    });
+                    }, 1000);
                 });
             });
+
             describe('when componentDidMount', () => {
                 it('should rerender', done => {
-                    render((
+                    root.render((
                         <Scrollbars universal style={{ width: 100, height: 100 }}>
                             <div style={{ width: 200, height: 200 }}/>
                         </Scrollbars>
-                    ), node, function callback() {
-                        setTimeout(() => {
-                            const { view } = this;
-                            expect(view.style.overflow).toEqual('scroll');
-                            expect(view.style.marginBottom).toEqual(`${-scrollbarWidth}px`);
-                            expect(view.style.marginRight).toEqual(`${-scrollbarWidth}px`);
-                            done();
-                        }, 100);
-                    });
+                    ));
+
+                    setTimeout(() => {
+                        const rootNode = node.getElementsByTagName('div')[0];
+                        const scrollView = rootNode.getElementsByTagName('div')[0];
+
+                        expect(scrollView.style.overflow).toEqual('scroll');
+                        expect(scrollView.style.marginBottom).toEqual(`${-scrollbarWidth}px`);
+                        expect(scrollView.style.marginRight).toEqual(`${-scrollbarWidth}px`);
+
+                        done();
+                    }, 1000);
                 });
             });
         });
+
         describe('when using autoHeight', () => {
             describe('when rendered', () => {
                 it('should hide overflow', done => {
@@ -68,41 +87,53 @@ export default function createTests(scrollbarWidth) {
                         // looks like on the first rendering
                         componentDidMount() {}
                     }
-                    render((
+                    root.render((
                         <ScrollbarsTest universal autoHeight autoHeightMax={100}>
                             <div style={{ width: 200, height: 200 }}/>
                         </ScrollbarsTest>
-                    ), node, function callback() {
-                        const { view, trackHorizontal, trackVertical } = this;
-                        expect(view.style.position).toEqual('relative');
-                        expect(view.style.overflow).toEqual('hidden');
-                        expect(view.style.marginBottom).toEqual('0px');
-                        expect(view.style.marginRight).toEqual('0px');
-                        expect(view.style.minHeight).toEqual('0px');
-                        expect(view.style.maxHeight).toEqual('100px');
-                        expect(trackHorizontal.style.display).toEqual('none');
+                    ));
+
+                    setTimeout(() => {
+                        const rootNode = node.getElementsByTagName('div')[0];
+                        const scrollView = rootNode.getElementsByTagName('div')[0];
+                        const trackVertical = rootNode.getElementsByTagName('div')[2];
+                        const trackHorizontal = rootNode.getElementsByTagName('div')[4];
+
+                        expect(scrollView.style.position).toEqual('relative');
+                        expect(scrollView.style.overflow).toEqual('hidden');
+                        expect(scrollView.style.marginBottom).toEqual('0px');
+                        expect(scrollView.style.marginRight).toEqual('0px');
+                        expect(scrollView.style.minHeight).toEqual('0px');
+                        expect(scrollView.style.maxHeight).toEqual('100px');
+
                         expect(trackVertical.style.display).toEqual('none');
+                        expect(trackHorizontal.style.display).toEqual('none');
+
                         done();
-                    });
+                    }, 1000);
                 });
             });
+
             describe('when componentDidMount', () => {
                 it('should rerender', done => {
-                    render((
+                    root.render((
                         <Scrollbars universal autoHeight autoHeightMax={100}>
                             <div style={{ width: 200, height: 200 }}/>
                         </Scrollbars>
-                    ), node, function callback() {
-                        setTimeout(() => {
-                            const { view } = this;
-                            expect(view.style.overflow).toEqual('scroll');
-                            expect(view.style.marginBottom).toEqual(`${-scrollbarWidth}px`);
-                            expect(view.style.marginRight).toEqual(`${-scrollbarWidth}px`);
-                            expect(view.style.minHeight).toEqual(`${scrollbarWidth}px`);
-                            expect(view.style.maxHeight).toEqual(`${100 + scrollbarWidth}px`);
-                            done();
-                        });
-                    });
+                    ));
+
+                    setTimeout(() => {
+                        const rootNode = node.getElementsByTagName('div')[0];
+                        const scrollView = rootNode.getElementsByTagName('div')[0];
+
+                        expect(scrollView.style.overflow).toEqual('scroll');
+                        expect(scrollView.style.marginBottom).toEqual(`${-scrollbarWidth}px`);
+                        expect(scrollView.style.marginRight).toEqual(`${-scrollbarWidth}px`);
+                        expect(scrollView.style.minHeight).toEqual(`${scrollbarWidth}px`);
+                        expect(scrollView.style.maxHeight).toEqual(`${100 + scrollbarWidth}px`);
+
+                        done();
+                    }, 1000);
                 });
             });
         });

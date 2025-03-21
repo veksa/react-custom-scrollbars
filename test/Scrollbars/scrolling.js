@@ -1,15 +1,27 @@
 import { Scrollbars } from 'react-custom-scrollbars';
-import { render, unmountComponentAtNode } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import React from 'react';
 
 export default function createTests(scrollbarWidth, envScrollbarWidth) {
     let node;
+    let root;
+
+    let ref;
+
+    const setRef = nextRef => {
+        ref = nextRef;
+    };
+
     beforeEach(() => {
         node = document.createElement('div');
+        node.setAttribute('id', 'root');
         document.body.appendChild(node);
+
+        root = createRoot(node);
     });
+
     afterEach(() => {
-        unmountComponentAtNode(node);
+        root.unmount();
         document.body.removeChild(node);
     });
 
@@ -17,71 +29,97 @@ export default function createTests(scrollbarWidth, envScrollbarWidth) {
         describe('when native scrollbars have a width', () => {
             if (!scrollbarWidth) return;
             it('should update thumbs position', done => {
-                render((
-                    <Scrollbars style={{ width: 100, height: 100 }}>
+                root.render((
+                    <Scrollbars ref={setRef} style={{ width: 100, height: 100 }}>
                         <div style={{ width: 200, height: 200 }}/>
                     </Scrollbars>
-                ), node, function callback() {
-                    this.scrollTop(50);
-                    this.scrollLeft(50);
+                ));
+
+                setTimeout(() => {
+                    ref.scrollTop(50);
+                    ref.scrollLeft(50);
+
                     setTimeout(() => {
+                        const rootNode = node.getElementsByTagName('div')[0];
+                        const thumbVertical = rootNode.getElementsByTagName('div')[3];
+                        const thumbHorizontal = rootNode.getElementsByTagName('div')[5];
+
                         if (scrollbarWidth) {
                             // 50 / (200 - 100) * (96 - 48) = 24
-                            expect(this.thumbVertical.style.transform).toEqual('translateY(24px)');
-                            expect(this.thumbHorizontal.style.transform).toEqual('translateX(24px)');
+                            expect(thumbVertical.style.transform).toEqual('translateY(24px)');
+                            expect(thumbHorizontal.style.transform).toEqual('translateX(24px)');
                         } else {
-                            expect(this.thumbVertical.style.transform).toEqual('');
-                            expect(this.thumbHorizontal.style.transform).toEqual('');
+                            expect(thumbVertical.style.transform).toEqual('');
+                            expect(thumbHorizontal.style.transform).toEqual('');
                         }
                         done();
                     }, 100);
-                });
+                }, 1000);
             });
         });
 
         it('should not trigger a rerender', () => {
-            render((
-                <Scrollbars style={{ width: 100, height: 100 }}>
+            root.render((
+                <Scrollbars ref={setRef} style={{ width: 100, height: 100 }}>
                     <div style={{ width: 200, height: 200 }}/>
                 </Scrollbars>
-            ), node, function callback() {
-                const spy = spyOn(this, 'render').andCallThrough();
-                this.scrollTop(50);
+            ));
+
+            setTimeout(() => {
+                const spy = spyOn(ref, 'render').andCallThrough();
+
+                ref.scrollTop(50);
+
                 expect(spy.calls.length).toEqual(0);
+
                 spy.restore();
-            });
+            }, 1000);
         });
 
         describe('when scrolling x-axis', () => {
             it('should call `onScroll`', done => {
                 const spy = createSpy();
-                render((
-                    <Scrollbars style={{ width: 100, height: 100 }} onScroll={spy}>
+
+                root.render((
+                    <Scrollbars ref={setRef} style={{ width: 100, height: 100 }} onScroll={spy}>
                         <div style={{ width: 200, height: 200 }}/>
                     </Scrollbars>
-                ), node, function callback() {
-                    this.scrollLeft(50);
+                ));
+
+                setTimeout(() => {
+                    ref.scrollLeft(50);
+
                     setTimeout(() => {
                         expect(spy.calls.length).toEqual(1);
+
                         const args = spy.calls[0].arguments;
                         const event = args[0];
+
                         expect(event).toBeA(Event);
+
                         done();
                     }, 100);
-                });
+                }, 1000);
             });
+
             it('should call `onScrollFrame`', done => {
                 const spy = createSpy();
-                render((
-                    <Scrollbars style={{ width: 100, height: 100 }} onScrollFrame={spy}>
+
+                root.render((
+                    <Scrollbars ref={setRef} style={{ width: 100, height: 100 }} onScrollFrame={spy}>
                         <div style={{ width: 200, height: 200 }}/>
                     </Scrollbars>
-                ), node, function callback() {
-                    this.scrollLeft(50);
+                ));
+
+                setTimeout(() => {
+                    ref.scrollLeft(50);
+
                     setTimeout(() => {
                         expect(spy.calls.length).toEqual(1);
+
                         const args = spy.calls[0].arguments;
                         const values = args[0];
+
                         expect(values).toBeA(Object);
 
                         if (scrollbarWidth) {
@@ -109,36 +147,46 @@ export default function createTests(scrollbarWidth, envScrollbarWidth) {
                         }
                         done();
                     }, 100);
-                });
+                }, 1000);
             });
+
             it('should call `onScrollStart` once', done => {
                 const spy = createSpy();
-                render((
-                    <Scrollbars style={{ width: 100, height: 100 }} onScrollStart={spy}>
+
+                root.render((
+                    <Scrollbars ref={setRef} style={{ width: 100, height: 100 }} onScrollStart={spy}>
                         <div style={{ width: 200, height: 200 }}/>
                     </Scrollbars>
-                ), node, function callback() {
+                ));
+
+                setTimeout(() => {
                     let left = 0;
                     const interval = setInterval(() => {
-                        this.scrollLeft(++left);
+                        ref.scrollLeft(++left);
+
                         if (left >= 50) {
                             clearInterval(interval);
                             expect(spy.calls.length).toEqual(1);
                             done();
                         }
                     }, 10);
-                });
+                }, 1000);
             });
+
             it('should call `onScrollStop` once when scrolling stops', done => {
                 const spy = createSpy();
-                render((
-                    <Scrollbars style={{ width: 100, height: 100 }} onScrollStop={spy}>
+
+                root.render((
+                    <Scrollbars ref={setRef} style={{ width: 100, height: 100 }} onScrollStop={spy}>
                         <div style={{ width: 200, height: 200 }}/>
                     </Scrollbars>
-                ), node, function callback() {
+                ));
+
+                setTimeout(() => {
                     let left = 0;
                     const interval = setInterval(() => {
-                        this.scrollLeft(++left);
+                        ref.scrollLeft(++left);
+
                         if (left >= 50) {
                             clearInterval(interval);
                             setTimeout(() => {
@@ -147,19 +195,23 @@ export default function createTests(scrollbarWidth, envScrollbarWidth) {
                             }, 300);
                         }
                     }, 10);
-                });
+                }, 1000);
             });
         });
 
         describe('when scrolling y-axis', () => {
             it('should call `onScroll`', done => {
                 const spy = createSpy();
-                render((
-                    <Scrollbars style={{ width: 100, height: 100 }} onScroll={spy}>
+
+                root.render((
+                    <Scrollbars ref={setRef} style={{ width: 100, height: 100 }} onScroll={spy}>
                         <div style={{ width: 200, height: 200 }}/>
                     </Scrollbars>
-                ), node, function callback() {
-                    this.scrollTop(50);
+                ));
+
+                setTimeout(() => {
+                    ref.scrollTop(50);
+
                     setTimeout(() => {
                         expect(spy.calls.length).toEqual(1);
                         const args = spy.calls[0].arguments;
@@ -167,16 +219,21 @@ export default function createTests(scrollbarWidth, envScrollbarWidth) {
                         expect(event).toBeA(Event);
                         done();
                     }, 100);
-                });
+                }, 1000);
             });
+
             it('should call `onScrollFrame`', done => {
                 const spy = createSpy();
-                render((
-                    <Scrollbars style={{ width: 100, height: 100 }} onScrollFrame={spy}>
+
+                root.render((
+                    <Scrollbars ref={setRef} style={{ width: 100, height: 100 }} onScrollFrame={spy}>
                         <div style={{ width: 200, height: 200 }}/>
                     </Scrollbars>
-                ), node, function callback() {
-                    this.scrollTop(50);
+                ));
+
+                setTimeout(() => {
+                    ref.scrollTop(50);
+
                     setTimeout(() => {
                         expect(spy.calls.length).toEqual(1);
                         const args = spy.calls[0].arguments;
@@ -208,36 +265,46 @@ export default function createTests(scrollbarWidth, envScrollbarWidth) {
                         }
                         done();
                     }, 100);
-                });
+                }, 1000);
             });
+
             it('should call `onScrollStart` once', done => {
                 const spy = createSpy();
-                render((
-                    <Scrollbars style={{ width: 100, height: 100 }} onScrollStart={spy}>
+
+                root.render((
+                    <Scrollbars ref={setRef} style={{ width: 100, height: 100 }} onScrollStart={spy}>
                         <div style={{ width: 200, height: 200 }}/>
                     </Scrollbars>
-                ), node, function callback() {
+                ));
+
+                setTimeout(() => {
                     let top = 0;
                     const interval = setInterval(() => {
-                        this.scrollTop(++top);
+                        ref.scrollTop(++top);
+
                         if (top >= 50) {
                             clearInterval(interval);
                             expect(spy.calls.length).toEqual(1);
                             done();
                         }
                     }, 10);
-                });
+                }, 1000);
             });
+
             it('should call `onScrollStop` once when scrolling stops', done => {
                 const spy = createSpy();
-                render((
-                    <Scrollbars style={{ width: 100, height: 100 }} onScrollStop={spy}>
+
+                root.render((
+                    <Scrollbars ref={setRef} style={{ width: 100, height: 100 }} onScrollStop={spy}>
                         <div style={{ width: 200, height: 200 }}/>
                     </Scrollbars>
-                ), node, function callback() {
+                ));
+
+                setTimeout(() => {
                     let top = 0;
                     const interval = setInterval(() => {
-                        this.scrollTop(++top);
+                        ref.scrollTop(++top);
+
                         if (top >= 50) {
                             clearInterval(interval);
                             setTimeout(() => {
@@ -246,7 +313,7 @@ export default function createTests(scrollbarWidth, envScrollbarWidth) {
                             }, 300);
                         }
                     }, 10);
-                });
+                }, 1000);
             });
         });
     });
