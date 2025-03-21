@@ -1,6 +1,6 @@
 {
   "name": "@veksa/custom-scrollbars",
-  "version": "4.2.1-patch.1",
+  "version": "4.2.1-patch.2",
   "description": "React scrollbars component",
   "main": "./dist/cjs/scrollbars.cjs",
   "types": "./dist/scrollbars.d.ts",

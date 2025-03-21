@@ -1,20 +1,12 @@
-import React, {createElement, DetailedHTMLProps, HTMLAttributes, ReactNode} from 'react';
+import React, {createElement, DetailedHTMLProps, HTMLAttributes} from 'react';
 import {containerStyleAutoHeight, containerStyleDefault} from './styles';
 import {omit} from '../utils/omit';
-import {IScrollbarsProps} from "./Scrollbars";
+import {IScrollbarLayout, IScrollbarsProps} from "./Scrollbars";
 
 /* eslint-disable react/prop-types */
 
 export function renderViewDefault(props: DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>) {
     return <div {...props}/>;
-}
-
-export interface ILayoutParams {
-    view: ReactNode;
-    trackHorizontal: ReactNode;
-    trackVertical: ReactNode;
-    thumbHorizontal: ReactNode;
-    thumbVertical: ReactNode;
 }
 
 const omitContainerProps = [
@@ -45,7 +37,7 @@ const omitContainerProps = [
     'children',
 ];
 
-export function renderLayoutDefault(layout: ILayoutParams, props: IScrollbarsProps) {
+export function renderLayoutDefault(layout: IScrollbarLayout, props: IScrollbarsProps) {
     const {view, trackHorizontal, trackVertical, thumbHorizontal, thumbVertical} = layout;
     const {tagName, autoHeight, autoHeightMin, autoHeightMax, style} = props;
 
