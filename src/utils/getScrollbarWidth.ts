@@ -1,16 +1,16 @@
 import css from 'dom-css';
 
-let scrollbarWidth = false;
-let updateScrollbarWidth = null;
+let scrollbarWidth: number | undefined = undefined;
+let updateScrollbarWidth: VoidFunction | undefined = undefined;
 
 export const OSX_FAKE_SCROLLBAR_WIDTH = 20;
 
-export function getActualScrollbarWidth(rootId) {
-    const root = rootId
-        ? document.getElementById(rootId)
+export function getActualScrollbarWidth(rootId?: string) {
+    const root: HTMLElement = rootId
+        ? document.getElementById(rootId) ?? document.body
         : document.body;
 
-    if (scrollbarWidth !== false) {
+    if (scrollbarWidth) {
         return scrollbarWidth;
     }
 
@@ -59,7 +59,7 @@ export function getActualScrollbarWidth(rootId) {
     outer.appendChild(innerMeasure);
 
     window.addEventListener('resize', function updateScrollbarWidthOnResize() {
-        scrollbarWidth = false;
+        scrollbarWidth = undefined;
     });
 
     updateScrollbarWidth = () => {
@@ -74,12 +74,14 @@ export function getActualScrollbarWidth(rootId) {
     return scrollbarWidth;
 }
 
-export function fixMacOsContentWidth(width, rootId) {
-  return getActualScrollbarWidth(rootId) !== 0
-    ? width
-    : width - OSX_FAKE_SCROLLBAR_WIDTH;
+export function fixMacOsContentWidth(rootId?: string, width: number = 0) {
+    return getActualScrollbarWidth(rootId)
+        ? width
+        : width - OSX_FAKE_SCROLLBAR_WIDTH;
 }
 
-export default function getScrollbarWidth(hasVerticalScroll = true, rootId) {
-    return hasVerticalScroll ? getActualScrollbarWidth(rootId) || OSX_FAKE_SCROLLBAR_WIDTH : 0;
+export function getScrollbarWidth(rootId?: string, hasVerticalScroll = true) {
+    return hasVerticalScroll
+        ? getActualScrollbarWidth(rootId) || OSX_FAKE_SCROLLBAR_WIDTH
+        : 0;
 }
