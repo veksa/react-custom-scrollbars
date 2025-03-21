@@ -1,18 +1,24 @@
 {
   "compilerOptions": {
+    "target": "es6",
     "module": "commonjs",
     "jsx": "react-jsx",
+    "moduleResolution": "node",
     "strict": true,
     "allowJs": true,
     "esModuleInterop": true,
     "lib": [
       "dom",
       "es6",
+      "esnext"
     ]
   },
   "include": [
     "./src",
     "./test",
     "tsup.config.ts"
+  ],
+  "exclude": [
+    "./node_modules"
   ]
 }

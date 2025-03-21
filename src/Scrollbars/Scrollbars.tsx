@@ -46,33 +46,33 @@ export interface IScrollbarsProps {
     rootId?: string;
     universal?: boolean;
 
-    onScroll?: Function,
-    onScrollFrame?: Function,
-    onScrollStart?: Function,
-    onScrollStop?: Function,
-    onUpdate?: Function,
-    renderView?: (props: HTMLProps<any>) => ReactNode,
-    renderTrackHorizontal?: (props: HTMLProps<any>) => ReactNode,
-    renderTrackVertical?: (props: HTMLProps<any>) => ReactNode,
-    renderThumbHorizontal?: (props: HTMLProps<any>) => ReactNode,
-    renderThumbVertical?: (props: HTMLProps<any>) => ReactNode,
-    renderLayout?: (layout: ILayoutParams, props: IScrollbarsProps) => ReactNode,
-    tagName?: string,
-    thumbSize?: number,
-    thumbMinSize?: number,
-    hideTracksWhenNotNeeded?: boolean,
-    hasHorizontalScroll?: boolean,
-    hasVerticalScroll?: boolean,
-    autoHide?: boolean,
-    autoHideTimeout?: number,
-    autoHideDuration?: number,
-    autoHeight?: boolean,
-    autoHeightMin?: number | string,
-    autoHeightMax?: number | string,
-    smoothScroll?: boolean,
+    onScroll?: Function;
+    onScrollFrame?: Function;
+    onScrollStart?: Function;
+    onScrollStop?: Function;
+    onUpdate?: Function;
+    renderView?: (props: HTMLProps<HTMLDivElement>) => ReactElement<any>;
+    renderTrackHorizontal?: (props: HTMLProps<HTMLDivElement>) => ReactElement<any>;
+    renderTrackVertical?: (props: HTMLProps<HTMLDivElement>) => ReactElement<any>;
+    renderThumbHorizontal?: (props: HTMLProps<HTMLDivElement>) => ReactElement<any>;
+    renderThumbVertical?: (props: HTMLProps<HTMLDivElement>) => ReactElement<any>;
+    renderLayout?: (layout: ILayoutParams, props: IScrollbarsProps) => ReactElement<any> | undefined;
+    tagName?: string;
+    thumbSize?: number;
+    thumbMinSize?: number;
+    hideTracksWhenNotNeeded?: boolean;
+    hasHorizontalScroll?: boolean;
+    hasVerticalScroll?: boolean;
+    autoHide?: boolean;
+    autoHideTimeout?: number;
+    autoHideDuration?: number;
+    autoHeight?: boolean;
+    autoHeightMin?: number | string;
+    autoHeightMax?: number | string;
+    smoothScroll?: boolean;
 
     className?: string;
-    style?: object,
+    style?: object;
 
     children: ReactNode;
 }
@@ -97,12 +97,12 @@ export class Scrollbars extends Component<IScrollbarsProps> {
     private prevPageX?: number;
     private prevPageY?: number;
 
-    private view: HTMLElement | undefined;
-    private container: HTMLElement | undefined;
-    private trackHorizontal: HTMLElement | undefined;
-    private trackVertical: HTMLElement | undefined;
-    private thumbHorizontal: HTMLElement | undefined;
-    private thumbVertical: HTMLElement | undefined;
+    private view: HTMLElement | null = null;
+    private container: HTMLElement | null = null;
+    private trackHorizontal: HTMLElement | null = null;
+    private trackVertical: HTMLElement | null = null;
+    private thumbHorizontal: HTMLElement | null = null;
+    private thumbVertical: HTMLElement | null = null;
 
     private lastViewScrollTop?: number;
     private lastViewScrollLeft?: number;
@@ -743,9 +743,10 @@ export class Scrollbars extends Component<IScrollbarsProps> {
 
         const view = renderView
             ? cloneElement(
-                renderView({style: viewStyle}) as ReactElement,
+                renderView({style: viewStyle}) as ReactElement<any>,
                 {
-                    key: 'view', ref: (ref: HTMLElement) => {
+                    key: 'view',
+                    ref: (ref: HTMLElement | null) => {
                         this.view = ref;
                     }
                 },
@@ -768,9 +769,9 @@ export class Scrollbars extends Component<IScrollbarsProps> {
 
         const thumbHorizontal = renderThumbHorizontal
             ? cloneElement(
-                renderThumbHorizontal({style: thumbHorizontalStyleDefault}) as ReactElement,
+                renderThumbHorizontal({style: thumbHorizontalStyleDefault}) as ReactElement<any>,
                 {
-                    ref: (ref: HTMLElement) => {
+                    ref: (ref: HTMLElement | null) => {
                         this.thumbHorizontal = ref;
                     }
                 }
@@ -779,20 +780,21 @@ export class Scrollbars extends Component<IScrollbarsProps> {
 
         const trackHorizontal = renderTrackHorizontal
             ? cloneElement(
-                renderTrackHorizontal({style: trackHorizontalStyle}) as ReactElement,
+                renderTrackHorizontal({style: trackHorizontalStyle}) as ReactElement<any>,
                 {
-                    key: 'trackHorizontal', ref: (ref: HTMLElement) => {
+                    key: 'trackHorizontal',
+                    ref: (ref: HTMLElement | null) => {
                         this.trackHorizontal = ref;
                     }
-                },
+                }
             )
             : undefined;
 
         const thumbVertical = renderThumbVertical
             ? cloneElement(
-                renderThumbVertical({style: thumbVerticalStyleDefault}) as ReactElement,
+                renderThumbVertical({style: thumbVerticalStyleDefault}) as ReactElement<any>,
                 {
-                    ref: (ref: HTMLElement) => {
+                    ref: (ref: HTMLElement | null) => {
                         this.thumbVertical = ref;
                     }
                 }
@@ -801,9 +803,10 @@ export class Scrollbars extends Component<IScrollbarsProps> {
 
         const trackVertical = renderTrackVertical
             ? cloneElement(
-                renderTrackVertical({style: trackVerticalStyle}) as ReactElement,
+                renderTrackVertical({style: trackVerticalStyle}) as ReactElement<any>,
                 {
-                    key: 'trackVertical', ref: (ref: HTMLElement) => {
+                    key: 'trackVertical',
+                    ref: (ref: HTMLElement | null) => {
                         this.trackVertical = ref;
                     }
                 }
@@ -820,10 +823,12 @@ export class Scrollbars extends Component<IScrollbarsProps> {
             }, this.props)
             : undefined;
 
-        return cloneElement(layout as ReactElement, {
-            ref: (ref: HTMLElement) => {
-                this.container = ref;
-            }
-        });
+        return layout
+            ? cloneElement(layout, {
+                ref: (ref: HTMLElement | null) => {
+                    this.container = ref;
+                }
+            })
+            : null;
     }
 }
