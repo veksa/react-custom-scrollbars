@@ -22,7 +22,6 @@ import {
     viewStyleUniversalInitial
 } from './styles';
 import {
-    ILayoutParams,
     renderLayoutDefault,
     renderThumbHorizontalDefault,
     renderThumbVerticalDefault,
@@ -32,17 +31,60 @@ import {
 } from "./defaultRenderElements";
 
 export interface IScrollbarValues {
-    left: number;
     top: number;
-    scrollLeft: number;
-    scrollTop: number;
-    scrollWidth: number;
-    scrollHeight: number;
+    left: number;
+
     clientWidth: number;
     clientHeight: number;
+
+    scrollWidth: number;
+    scrollHeight: number;
+
+    scrollTop: number;
+    scrollLeft: number;
+}
+
+export interface IScrollbarLayout {
+    view: ReactNode;
+    trackHorizontal: ReactNode;
+    trackVertical: ReactNode;
+    thumbHorizontal: ReactNode;
+    thumbVertical: ReactNode;
+}
+
+export interface IScrollbar {
+    view: HTMLDivElement;
+
+    scrollTop(top: number): void;
+
+    scrollLeft(left: number): void;
+
+    scrollToTop(): void;
+
+    scrollToBottom(): void;
+
+    scrollToLeft(): void;
+
+    scrollToRight(): void;
+
+    getScrollLeft(): number;
+
+    getScrollTop(): number;
+
+    getScrollWidth(): number;
+
+    getScrollHeight(): number;
+
+    getClientWidth(): number;
+
+    getClientHeight(): number;
+
+    getValues(): IScrollbarValues;
 }
 
 export interface IScrollbarsProps {
+    ref?: IScrollbar;
+
     rootId?: string;
     universal?: boolean;
 
@@ -56,7 +98,7 @@ export interface IScrollbarsProps {
     renderTrackVertical?: (props: HTMLProps<HTMLDivElement>) => ReactElement<any>;
     renderThumbHorizontal?: (props: HTMLProps<HTMLDivElement>) => ReactElement<any>;
     renderThumbVertical?: (props: HTMLProps<HTMLDivElement>) => ReactElement<any>;
-    renderLayout?: (layout: ILayoutParams, props: IScrollbarsProps) => ReactElement<any> | undefined;
+    renderLayout?: (layout: IScrollbarLayout, props: IScrollbarsProps) => ReactElement<any> | undefined;
     tagName?: string;
     thumbSize?: number;
     thumbMinSize?: number;

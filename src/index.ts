@@ -1,3 +1,2 @@
-import {Scrollbars} from './Scrollbars/Scrollbars';
-
-export {Scrollbars};
+export {Scrollbars} from './Scrollbars/Scrollbars';
+export type {IScrollbarValues, IScrollbarLayout, IScrollbar} from './Scrollbars/Scrollbars';
